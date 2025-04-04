@@ -36,28 +36,18 @@
 
 <script setup>
 
-import { defineProps, watch,computed, onMounted, onUnmounted } from 'vue';
+import { defineProps, watch,computed, onMounted, onUnmounted, getCurrentInstance } from 'vue';
 import { useForm, Link, usePage } from '@inertiajs/vue3';
-import Echo from "laravel-echo";
-import Pusher from "pusher-js";
+
+const { proxy } = getCurrentInstance();
 
 const props = defineProps({
     conversation: Object
 })
 
-window.Pusher = Pusher;
-
-window.Echo = new Echo({
-    broadcaster: "pusher",
-    key: import.meta.env.VITE_PUSHER_APP_KEY,
-    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-    forceTLS: true
+proxy.$echo.channel(`chat.${props.conversation?.id}`).listen(".MessageSent", (data) => {
+    props.conversation.messages.push(data.message);
 });
-
-window.Echo.channel(`chat.${props.conversation?.id}`)
-    .listen(".MessageSent", (data) => {
-        props.conversation.messages.push(data.message);
-    });
 
 const form = useForm({
     text: null,

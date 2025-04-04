@@ -33,13 +33,16 @@ class MessageSent implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        Log::info("Broadcasting to channel: chat.{$this->conversation->id}");
-        return new Channel('chat.' . $this->conversation->id);
+        return [
+            new Channel('chat.' . $this->conversation->id),
+            new Channel('notifications.' . $this->chatMessage->receiver_id), //send notification to the receiver
+        ];
+        // return new Channel('chat.' . $this->conversation->id);
     }
 
     public function broadcastAs()
     {
-        return "MessageSent"; // Make sure your frontend listens to this
+        return "MessageSent";
     }
 
     public function broadcastWith() {
