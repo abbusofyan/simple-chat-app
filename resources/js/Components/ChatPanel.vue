@@ -58,8 +58,10 @@ const form = useForm({
 
 const send = async () => {
     try {
-        form.post('/chat/send')
-        form.text = null
+        if (form.text) {
+            form.post('/chat/send')
+            form.text = null
+        }
     } catch (error) {
         console.error("Failed to fetch conversation:", error);
     }

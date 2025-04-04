@@ -21,6 +21,7 @@ class MessageSent implements ShouldBroadcast
      */
     public function __construct(ChatMessage $chatMessage, Conversation $conversation)
     {
+        $chatMessage->load('sender');
         $this->chatMessage = $chatMessage;
         $this->conversation = $conversation;
     }
@@ -35,7 +36,7 @@ class MessageSent implements ShouldBroadcast
     {
         return [
             new Channel('chat.' . $this->conversation->id),
-            new Channel('notifications.' . $this->chatMessage->receiver_id), //send notification to the receiver
+            new Channel('notification.' . $this->chatMessage->receiver_id), //send notification to the receiver
         ];
         // return new Channel('chat.' . $this->conversation->id);
     }

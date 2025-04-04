@@ -8,6 +8,8 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import { createEcho } from './plugins/echo';
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -21,7 +23,8 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         const app = createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use(ZiggyVue);
+            .use(ZiggyVue)
+            .use(Toast);
 
             app.config.globalProperties.$filters = {
                 formatDate(dateString) {
@@ -36,13 +39,11 @@ createInertiaApp({
 
             const userId = props.initialPage.props.auth?.user?.id;
 
-            app.config.globalProperties.$echo = createEcho(userId);
+            const echo = createEcho(userId);
+
+            app.config.globalProperties.$echo = echo;
 
             app.mount(el);
-
-            // window.Echo.channel(`notification.${props.initialPage.props.auth.user.id}`).listen(".MessageSent", (data) => {
-            //     props.conversation.messages.push(data.message);
-            // });
     },
     progress: {
         color: '#4B5563',
