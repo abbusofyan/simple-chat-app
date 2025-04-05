@@ -62,6 +62,13 @@ proxy.$echo.channel(`notification.${usePage().props.auth.user.id}`).listen(".Mes
                                 >
                                     Dashboard
                                 </NavLink>
+
+                                <NavLink
+                                    :href="route('chat.index')"
+                                    :active="route().current('chat.*') || route().current('contact.*')"
+                                >
+                                    Chat Room
+                                </NavLink>
                             </div>
                         </div>
 
