@@ -2,6 +2,8 @@
 
 A real-time chat application built with Laravel, Vue 3, Inertia.js, and Pusher.
 
+try to login with seeded user. all password = password
+
 ## Features
 - Real-time messaging using Pusher
 - User authentication with Laravel Breeze
