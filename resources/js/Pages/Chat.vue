@@ -5,9 +5,9 @@
     <AuthenticatedLayout>
         <div class="container">
             <div class="mx-auto py-12 row">
-                <div class="col-6 bg-white d-flex flex-column" style="height: 500px; overflow-y: auto;">
+                <div class="col-md-6 col-12 bg-white d-flex flex-column" style="height: 500px; overflow-y: auto;">
                     <NavPills/>
-                    <ol class="list-group flex-grow-1">
+                    <ol class="list-group flex-grow-1" v-if="conversations.length > 0">
                         <template v-for="conv in conversations">
                             <li class="list-group-item d-flex justify-content-between align-items-start" @click="navigateTo(conv.id)" style="cursor: pointer;">
                                 <div class="ms-2 me-auto">
@@ -17,9 +17,11 @@
                             </li>
                         </template>
                     </ol>
+                    <div v-else class="alert alert-danger" role="alert">
+                        No Conversation found. <a href="/contact">Start new conversation</a>
+                    </div>
                 </div>
-
-                <div class="col-6 d-flex flex-column bg-light" style="height: 500px; overflow-y: auto;">
+                <div class="col-md-6 col-12 d-flex flex-column bg-light px-0" style="height: 500px; overflow-y: auto;">
                     <ChatPanel :conversation="activeChat"/>
                 </div>
             </div>

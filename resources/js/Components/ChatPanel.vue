@@ -23,6 +23,7 @@
                         <div class="message" :class="usePage().props.auth.user.id == message.sender_id ? 'float-right my-message' : 'other-message'">{{message.text}}</div>
                     </li>
                 </template>
+                <div ref="bottomOfMessages"></div>
             </ul>
         </div>
         <div v-if="conversation" class="chat-message clearfix" style="position: sticky; bottom: 0; background-color: white; z-index: 1;">
@@ -36,7 +37,7 @@
 
 <script setup>
 
-import { defineProps, watch,computed, onMounted, onUnmounted, getCurrentInstance } from 'vue';
+import { defineProps, ref, nextTick, watch, computed, onMounted, onUnmounted, getCurrentInstance } from 'vue';
 import { useForm, Link, usePage } from '@inertiajs/vue3';
 
 const { proxy } = getCurrentInstance();
@@ -49,6 +50,25 @@ proxy.$echo.channel(`chat.${props.conversation?.id}`).listen(".MessageSent", (da
     props.conversation.messages.push(data.message);
 });
 
+const bottomOfMessages = ref(null);
+
+const scrollToBottom = () => {
+    nextTick(() => {
+        bottomOfMessages.value?.scrollIntoView({ behavior: 'smooth' });
+    });
+};
+
+watch(
+    () => props.conversation?.messages.length,
+    () => {
+        scrollToBottom();
+    }
+);
+
+onMounted(() => {
+    scrollToBottom();
+});
+
 const form = useForm({
     text: null,
     conversation_id: props.conversation?.id,
@@ -59,7 +79,9 @@ const form = useForm({
 const send = async () => {
     try {
         if (form.text) {
-            form.post('/chat/send')
+            form.post('/chat/send', {
+                preserveScroll: true
+            });
             form.text = null
         }
     } catch (error) {
