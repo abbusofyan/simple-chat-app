@@ -13,7 +13,7 @@
                 </div>
             </div>
         </div>
-        <div class="chat-history">
+        <div class="chat-history" @scroll="handleScroll" style="height: 340px; overflow-y: auto;">
             <ul class="m-b-0">
                 <template v-if="conversation" v-for="message in conversation.messages">
                     <li class="clearfix">
@@ -48,6 +48,7 @@ const props = defineProps({
 
 proxy.$echo.channel(`chat.${props.conversation?.id}`).listen(".MessageSent", (data) => {
     props.conversation.messages.push(data.message);
+    scrollToBottom();
 });
 
 const bottomOfMessages = ref(null);
@@ -58,14 +59,8 @@ const scrollToBottom = () => {
     });
 };
 
-watch(
-    () => props.conversation?.messages.length,
-    () => {
-        scrollToBottom();
-    }
-);
-
 onMounted(() => {
+    loadOlderMessages();
     scrollToBottom();
 });
 
@@ -79,15 +74,43 @@ const form = useForm({
 const send = async () => {
     try {
         if (form.text) {
-            form.post('/chat/send', {
-                preserveScroll: true
-            });
+            await axios.post('/chat/send', form);
             form.text = null
+            scrollToBottom();
         }
     } catch (error) {
         console.error("Failed to fetch conversation:", error);
     }
 };
+
+const isLoadingOlder = ref(null);
+const hasMoreMessages = ref(null);
+
+const handleScroll = () => {
+    const scrollTop = event.target.scrollTop;
+    if (scrollTop === 0) {
+        loadOlderMessages();
+    }
+}
+
+const loadOlderMessages = async() => {
+    isLoadingOlder.value = true;
+    const firstMessageId = props.conversation.messages ? props.conversation.messages[0]?.id : null
+    try {
+        const response = await axios.get(`/chat/${props.conversation.id}/messages`, {
+            params: {before: firstMessageId}
+        })
+
+        const oldMessages = response.data.messages
+        if (oldMessages.length === 0) {
+            hasMoreMessages.value = false
+        } else {
+            props.conversation.messages.unshift(...oldMessages)
+        }
+    } catch (e) {
+
+    }
+}
 
 </script>
 

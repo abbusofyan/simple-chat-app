@@ -21,7 +21,7 @@
                         No Conversation found. <a href="/contact">Start new conversation</a>
                     </div>
                 </div>
-                <div class="col-md-6 col-12 d-flex flex-column bg-light px-0" style="height: 500px; overflow-y: auto;">
+                <div class="col-md-6 col-12 d-flex flex-column bg-light px-0">
                     <ChatPanel :conversation="activeChat"/>
                 </div>
             </div>
@@ -34,7 +34,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import NavPills from '@/Components/NavPills.vue';
 import ChatPanel from '@/Components/ChatPanel.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { router, Head } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -45,6 +45,19 @@ const props = defineProps({
 const navigateTo = (conversationId) => {
     router.visit(`/chat/room/${conversationId}`);
 };
+
+const originalConsoleError = console.error;
+
+onMounted(() => {
+    console.error = function (...args) {
+        originalConsoleError.apply(console, args);
+        alert("Reloading page due to console error...");
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
+    };
+});
+
 
 </script>
 

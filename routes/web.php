@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('/chat', ChatController::class)->middleware(['auth', 'verified']);
     Route::get('/chat/room/{conversation}', [ChatController::class, 'room'])->name('chat.room');
     Route::get('/chat/get-conversation/{conversation}', [ChatController::class, 'getConversation'])->name('chat.get-conversation');
+    Route::get('/chat/{conversation}/messages', [ChatController::class, 'getConversationMessages'])->name('chat.get-conversation-messages');
     Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
 
     Route::resource('/contact', ContactController::class)->middleware(['auth', 'verified']);
