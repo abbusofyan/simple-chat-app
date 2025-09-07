@@ -1,6 +1,6 @@
 <template>
 
-    <Head title="Dashboard" />
+    <Head title="Dashboard Page" />
 
     <AuthenticatedLayout>
         <div class="container">
