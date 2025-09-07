@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Http;
 
 class LoginRequest extends FormRequest
 {
@@ -41,13 +42,24 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $response = Http::post('http://127.0.0.1:8001/api/login', $this->only('email', 'password'));
+        if (!$response->json()) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
+        session(['token' => $response->json()['token']]);
+        session(['user' => $response->json()['user']]);
+
+        // if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        //     RateLimiter::hit($this->throttleKey());
+        //
+        //     throw ValidationException::withMessages([
+        //         'email' => trans('auth.failed'),
+        //     ]);
+        // }
 
         RateLimiter::clear($this->throttleKey());
     }
