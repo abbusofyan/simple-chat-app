@@ -1,6 +1,6 @@
 <template>
 
-    <Head title="Dashboard Page" />
+    <Head title="Chat Page" />
 
     <AuthenticatedLayout>
         <div class="container">
